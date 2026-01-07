@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Code,
   Github,
   Linkedin,
   Mail,
@@ -27,6 +26,9 @@ function App() {
     message: "",
   });
   const [isVisible, setIsVisible] = useState(false);
+  const [typedText, setTypedText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const fullText = "Hi, this is M Mehedi";
 
   useEffect(() => {
     setIsVisible(true);
@@ -34,8 +36,37 @@ function App() {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
     window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+
+    let index = 0;
+    let timeout;
+
+    const type = () => {
+      if (!isDeleting && index <= fullText.length) {
+        setTypedText(fullText.substring(0, index));
+        index++;
+        timeout = setTimeout(type, 100);
+      } else if (!isDeleting && index > fullText.length) {
+        timeout = setTimeout(() => {
+          setIsDeleting(true);
+          type();
+        }, 2000);
+      } else if (isDeleting && index > 0) {
+        setTypedText(fullText.substring(0, index - 1));
+        index--;
+        timeout = setTimeout(type, 50);
+      } else if (isDeleting && index === 0) {
+        setIsDeleting(false);
+        timeout = setTimeout(type, 500);
+      }
+    };
+
+    type();
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      clearTimeout(timeout);
+    };
+  }, [isDeleting]);
 
   const projects = [
     {
@@ -85,7 +116,7 @@ function App() {
     { icon: Briefcase, value: "3+", label: "Years Experience" },
     { icon: Award, value: "15+", label: "Projects Completed" },
     { icon: Users, value: "10+", label: "Happy Clients" },
-    { icon: Coffee, value: "100+", label: "Cups of Coffee" },
+    { icon: Coffee, value: "1000+", label: "Cups of Coffee" },
   ];
 
   const services = [
@@ -156,16 +187,16 @@ function App() {
     <div className="bg-gray-900 text-gray-100 min-h-screen relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 md:w-96 md:h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
         <div
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"
+          className="absolute bottom-1/4 right-1/4 w-64 h-64 md:w-96 md:h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"
           style={{ animationDelay: "1s" }}
         ></div>
       </div>
 
-      {/* Cursor follower effect */}
+      {/* Cursor follower effect - hidden on mobile */}
       <div
-        className="fixed w-96 h-96 rounded-full pointer-events-none z-0 opacity-20 blur-3xl transition-all duration-300"
+        className="hidden md:block fixed w-96 h-96 rounded-full pointer-events-none z-0 opacity-20 blur-3xl transition-all duration-300"
         style={{
           background:
             "radial-gradient(circle, rgba(99,102,241,0.4) 0%, transparent 70%)",
@@ -176,13 +207,15 @@ function App() {
 
       {/* Navigation */}
       <nav className="fixed w-full bg-gray-900/95 backdrop-blur-md z-50 border-b border-gray-800/50 shadow-lg">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-pulse">
-            &lt;Hi, I am M Mehedi/&gt;
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 md:py-4 flex justify-between items-center">
+          <div className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-pulse">
+            <div>
+              <a href="/">&lt;mMehedi/&gt;</a>
+            </div>
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden md:flex space-x-4 lg:space-x-8">
             {[
               "home",
               "about",
@@ -195,7 +228,7 @@ function App() {
               <button
                 key={item}
                 onClick={() => ScrollToSection(item)}
-                className={`capitalize transition-all duration-300 ${
+                className={`capitalize transition-all duration-300 text-sm lg:text-base ${
                   activeSection === item
                     ? "text-indigo-400 font-semibold"
                     : "text-gray-300 hover:text-indigo-400"
@@ -242,7 +275,7 @@ function App() {
       {/* Hero Section */}
       <section
         id="home"
-        className="relative min-h-screen flex items-center justify-center px-6 pt-20"
+        className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 pt-20"
       >
         <div
           className={`max-w-5xl mx-auto text-center z-10 transition-all duration-1000 ${
@@ -252,42 +285,49 @@ function App() {
           <div className="mb-6 inline-block">
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
-              <Code
-                size={80}
-                className="relative text-indigo-400 animate-bounce"
-              />
+              {/* Custom Code Brackets with Typing Animation */}
+              <div className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-indigo-400 animate-bounce font-mono px-2">
+                <span className="text-purple-400">&lt;</span>
+                <span className="text-indigo-300 text-lg sm:text-2xl md:text-3xl lg:text-4xl align-middle">
+                  {typedText}
+                </span>
+                <span className="text-indigo-300 text-lg sm:text-2xl md:text-3xl lg:text-4xl align-middle animate-blink">
+                  |
+                </span>
+                <span className="text-purple-400">/&gt;</span>
+              </div>
             </div>
           </div>
 
-          <h1 className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent leading-tight">
             Frontend Developer
           </h1>
-          <p className="text-xl md:text-2xl text-gray-400 mb-4 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl text-gray-400 mb-3 sm:mb-4 max-w-3xl mx-auto px-4">
             Crafting beautiful, responsive web experiences
           </p>
-          <p className="text-lg text-gray-500 mb-8">
+          <p className="text-base sm:text-lg text-gray-500 mb-6 sm:mb-8 px-4">
             with <span className="text-indigo-400 font-semibold">3 years</span>{" "}
             of expertise in modern technologies
           </p>
-          <div className="flex justify-center space-x-4 flex-wrap gap-4">
+          <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-4 px-4">
             <button
               onClick={() => ScrollToSection("projects")}
-              className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-indigo-500/50 font-semibold flex items-center gap-2"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-indigo-500/50 font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
             >
               View Projects
-              <ArrowRight size={20} />
+              <ArrowRight size={18} className="sm:w-5 sm:h-5" />
             </button>
             <a
               href="/resume.pdf"
               download
-              className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-purple-500/50 font-semibold flex items-center gap-2"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-purple-500/50 font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
             >
-              <Download size={20} />
+              <Download size={18} className="sm:w-5 sm:h-5" />
               Download Resume
             </a>
             <button
               onClick={() => ScrollToSection("contact")}
-              className="px-8 py-4 border-2 border-indigo-600 hover:bg-indigo-600/10 rounded-lg transition-all font-semibold"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 border-2 border-indigo-600 hover:bg-indigo-600/10 rounded-lg transition-all font-semibold text-sm sm:text-base"
             >
               Get in Touch
             </button>
@@ -296,19 +336,21 @@ function App() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 px-6 relative z-10">
+      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             {stats.map((stat, idx) => (
               <div
                 key={idx}
-                className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 text-center hover:border-indigo-500/50 transition-all transform hover:scale-105"
+                className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-700/50 text-center hover:border-indigo-500/50 transition-all transform hover:scale-105"
               >
-                <stat.icon className="w-8 h-8 mx-auto mb-3 text-indigo-400" />
-                <div className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-1">
+                <stat.icon className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 sm:mb-3 text-indigo-400" />
+                <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-1">
                   {stat.value}
                 </div>
-                <div className="text-gray-400 text-sm">{stat.label}</div>
+                <div className="text-gray-400 text-xs sm:text-sm">
+                  {stat.label}
+                </div>
               </div>
             ))}
           </div>
@@ -316,38 +358,41 @@ function App() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 px-6 relative z-10">
+      <section
+        id="about"
+        className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10"
+      >
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-5xl font-bold mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             About Me
           </h2>
-          <p className="text-center text-gray-400 mb-12 text-lg">
+          <p className="text-center text-gray-400 mb-8 sm:mb-12 text-base sm:text-lg">
             Get to know me better
           </p>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50">
-              <h3 className="text-2xl font-bold mb-4 text-indigo-400">
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
+            <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-xl sm:rounded-2xl p-6 sm:p-8 border border-gray-700/50">
+              <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-indigo-400">
                 My Story
               </h3>
-              <p className="text-gray-300 text-lg leading-relaxed mb-4">
+              <p className="text-gray-300 text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
                 I'm a passionate frontend developer with 3 years of experience
                 building modern, user-centric web applications. I specialize in
                 React and have a keen eye for design and performance
                 optimization.
               </p>
-              <p className="text-gray-300 text-lg leading-relaxed">
+              <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
                 My journey in web development has taught me the importance of
                 clean code, responsive design, and creating seamless user
                 experiences.
               </p>
             </div>
 
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50">
-              <h3 className="text-2xl font-bold mb-4 text-purple-400">
+            <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-xl sm:rounded-2xl p-6 sm:p-8 border border-gray-700/50">
+              <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-purple-400">
                 What I Bring
               </h3>
-              <ul className="space-y-3">
+              <ul className="space-y-2 sm:space-y-3">
                 {[
                   "Clean, maintainable code",
                   "Pixel-perfect implementations",
@@ -356,8 +401,11 @@ function App() {
                   "Strong problem-solving skills",
                   "Excellent communication",
                 ].map((item, idx) => (
-                  <li key={idx} className="flex items-center text-gray-300">
-                    <Check className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                  <li
+                    key={idx}
+                    className="flex items-center text-gray-300 text-sm sm:text-base"
+                  >
+                    <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 mr-2 sm:mr-3 flex-shrink-0" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -368,30 +416,35 @@ function App() {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-20 px-6 relative z-10">
+      <section
+        id="services"
+        className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10"
+      >
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-5xl font-bold mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             Services
           </h2>
-          <p className="text-center text-gray-400 mb-12 text-lg">
+          <p className="text-center text-gray-400 mb-8 sm:mb-12 text-base sm:text-lg">
             What I can do for you
           </p>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {services.map((service, idx) => (
               <div
                 key={idx}
-                className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50 hover:border-indigo-500/50 transition-all transform hover:-translate-y-2 group"
+                className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-xl sm:rounded-2xl p-6 sm:p-8 border border-gray-700/50 hover:border-indigo-500/50 transition-all transform hover:-translate-y-2 group"
               >
-                <h3 className="text-2xl font-bold mb-3 text-indigo-400 group-hover:text-purple-400 transition-colors">
+                <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-400 group-hover:text-purple-400 transition-colors">
                   {service.title}
                 </h3>
-                <p className="text-gray-400 mb-6">{service.description}</p>
+                <p className="text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">
+                  {service.description}
+                </p>
                 <ul className="space-y-2">
                   {service.features.map((feature, i) => (
                     <li
                       key={i}
-                      className="flex items-center text-gray-300 text-sm"
+                      className="flex items-center text-gray-300 text-xs sm:text-sm"
                     >
                       <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-2"></div>
                       {feature}
@@ -405,41 +458,44 @@ function App() {
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="py-20 px-6 relative z-10">
+      <section
+        id="projects"
+        className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10"
+      >
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-5xl font-bold mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             Featured Projects
           </h2>
-          <p className="text-center text-gray-400 mb-12 text-lg">
+          <p className="text-center text-gray-400 mb-8 sm:mb-12 text-base sm:text-lg">
             Some of my recent work
           </p>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
             {projects.map((project, idx) => (
               <div
                 key={idx}
-                className={`bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-2xl p-8 border ${
+                className={`bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-xl sm:rounded-2xl p-6 sm:p-8 border ${
                   project.featured
                     ? "border-indigo-500/50"
                     : "border-gray-700/50"
                 } hover:border-indigo-500 transition-all transform hover:-translate-y-2 group relative overflow-hidden`}
               >
                 {project.featured && (
-                  <div className="absolute top-4 right-4 px-3 py-1 bg-indigo-500 text-xs font-semibold rounded-full">
+                  <div className="absolute top-3 sm:top-4 right-3 sm:right-4 px-2 sm:px-3 py-1 bg-indigo-500 text-xs font-semibold rounded-full">
                     Featured
                   </div>
                 )}
-                <h3 className="text-2xl font-bold mb-3 text-indigo-400 group-hover:text-purple-400 transition-colors">
+                <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-400 group-hover:text-purple-400 transition-colors">
                   {project.title}
                 </h3>
-                <p className="text-gray-400 mb-6 leading-relaxed">
+                <p className="text-gray-400 mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
                   {project.description}
                 </p>
-                <div className="flex flex-wrap gap-2 mb-6">
+                <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
                   {project.tech.map((tech, i) => (
                     <span
                       key={i}
-                      className="px-3 py-1 bg-indigo-600/20 text-indigo-300 rounded-full text-sm border border-indigo-500/30"
+                      className="px-2 sm:px-3 py-1 bg-indigo-600/20 text-indigo-300 rounded-full text-xs sm:text-sm border border-indigo-500/30"
                     >
                       {tech}
                     </span>
@@ -447,10 +503,13 @@ function App() {
                 </div>
                 <a
                   href={project.link}
-                  className="inline-flex items-center text-indigo-400 hover:text-indigo-300 transition-colors font-semibold group-hover:gap-3 gap-2"
+                  className="inline-flex items-center text-indigo-400 hover:text-indigo-300 transition-colors font-semibold group-hover:gap-3 gap-2 text-sm sm:text-base"
                 >
                   View Project{" "}
-                  <ExternalLink size={16} className="transition-all" />
+                  <ExternalLink
+                    size={14}
+                    className="sm:w-4 sm:h-4 transition-all"
+                  />
                 </a>
               </div>
             ))}
@@ -459,32 +518,35 @@ function App() {
       </section>
 
       {/* Skills Section */}
-      <section id="skills" className="py-20 px-6 relative z-10">
+      <section
+        id="skills"
+        className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10"
+      >
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-5xl font-bold mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             Skills & Technologies
           </h2>
-          <p className="text-center text-gray-400 mb-12 text-lg">
+          <p className="text-center text-gray-400 mb-8 sm:mb-12 text-base sm:text-lg">
             My technical expertise
           </p>
 
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {skills.map((skill, idx) => (
               <div key={idx} className="group">
-                <div className="flex justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <span className="text-gray-200 font-semibold text-lg">
+                <div className="flex justify-between mb-2 sm:mb-3 flex-wrap gap-2">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <span className="text-gray-200 font-semibold text-base sm:text-lg">
                       {skill.name}
                     </span>
-                    <span className="px-2 py-1 bg-indigo-500/20 text-indigo-300 rounded text-xs">
+                    <span className="px-2 py-0.5 sm:py-1 bg-indigo-500/20 text-indigo-300 rounded text-xs">
                       {skill.category}
                     </span>
                   </div>
-                  <span className="text-indigo-400 font-bold text-lg">
+                  <span className="text-indigo-400 font-bold text-base sm:text-lg">
                     {skill.level}%
                   </span>
                 </div>
-                <div className="w-full bg-gray-700/50 rounded-full h-4 overflow-hidden border border-gray-600/50">
+                <div className="w-full bg-gray-700/50 rounded-full h-3 sm:h-4 overflow-hidden border border-gray-600/50">
                   <div
                     className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-full rounded-full transition-all duration-1000 ease-out relative overflow-hidden"
                     style={{ width: `${skill.level}%` }}
@@ -499,35 +561,38 @@ function App() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 px-6 relative z-10">
+      <section
+        id="testimonials"
+        className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10"
+      >
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-5xl font-bold mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             Testimonials
           </h2>
-          <p className="text-center text-gray-400 mb-12 text-lg">
+          <p className="text-center text-gray-400 mb-8 sm:mb-12 text-base sm:text-lg">
             What people say about my work
           </p>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
             {testimonials.map((testimonial, idx) => (
               <div
                 key={idx}
-                className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50 hover:border-indigo-500/50 transition-all"
+                className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-xl sm:rounded-2xl p-6 sm:p-8 border border-gray-700/50 hover:border-indigo-500/50 transition-all"
               >
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold mr-4">
+                <div className="flex items-center mb-3 sm:mb-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold mr-3 sm:mr-4 text-sm sm:text-base">
                     {testimonial.avatar}
                   </div>
                   <div>
-                    <div className="font-semibold text-gray-200">
+                    <div className="font-semibold text-gray-200 text-sm sm:text-base">
                       {testimonial.name}
                     </div>
-                    <div className="text-sm text-gray-400">
+                    <div className="text-xs sm:text-sm text-gray-400">
                       {testimonial.role}
                     </div>
                   </div>
                 </div>
-                <p className="text-gray-300 italic leading-relaxed">
+                <p className="text-gray-300 italic leading-relaxed text-sm sm:text-base">
                   "{testimonial.content}"
                 </p>
               </div>
@@ -537,12 +602,15 @@ function App() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 px-6 relative z-10">
+      <section
+        id="contact"
+        className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10"
+      >
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-5xl font-bold mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             Let's Connect
           </h2>
-          <p className="text-gray-400 text-lg mb-12 text-center">
+          <p className="text-gray-400 text-base sm:text-lg mb-8 sm:mb-12 text-center px-4">
             I'm always open to new opportunities and collaborations. Feel free
             to reach out!
           </p>
@@ -556,13 +624,13 @@ function App() {
               <Mail size={24} />
             </a>
             <a
-              href="https://github.com"
+              href="https://github.com/aroien"
               className="p-4 bg-gradient-to-br from-gray-800/50 to-gray-800/30 border border-gray-700/50 rounded-full hover:border-indigo-500 hover:scale-110 transition-all"
             >
               <Github size={24} />
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/momehedi/"
               className="p-4 bg-gradient-to-br from-gray-800/50 to-gray-800/30 border border-gray-700/50 rounded-full hover:border-indigo-500 hover:scale-110 transition-all"
             >
               <Linkedin size={24} />
