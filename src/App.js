@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import emailjs from "@emailjs/browser";
 import {
   Github,
   Linkedin,
@@ -28,7 +29,13 @@ function App() {
   const [isVisible, setIsVisible] = useState(false);
   const [typedText, setTypedText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fullText = "Hi, this is M Mehedi";
+
+  // EmailJS Configuration - REPLACE THESE WITH YOUR VALUES
+  const EMAILJS_SERVICE_ID = "service_ebqxlce";
+  const EMAILJS_TEMPLATE_ID = "template_8z7doha";
+  const EMAILJS_PUBLIC_KEY = "80PfHghuTAIsE4rS3";
 
   useEffect(() => {
     setIsVisible(true);
@@ -176,11 +183,34 @@ function App() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    alert("Message sent successfully! I will get back to you soon.");
-    setFormData({ name: "", email: "", message: "" });
+    setIsSubmitting(true);
+
+    try {
+      const result = await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          message: formData.message,
+        },
+        EMAILJS_PUBLIC_KEY
+      );
+
+      if (result.text === "OK") {
+        alert("✅ Message sent successfully! I'll get back to you soon.");
+        setFormData({ name: "", email: "", message: "" });
+      }
+    } catch (error) {
+      console.error("EmailJS Error:", error);
+      alert(
+        "❌ Oops! Something went wrong. Please try again or email me directly."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -659,7 +689,7 @@ function App() {
                     onChange={handleInputChange}
                     required
                     className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                    placeholder="John Doe"
+                    placeholder="Your Name"
                   />
                 </div>
 
@@ -677,8 +707,10 @@ function App() {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
+                    disabled={isSubmitting}
+                    rows="6"
                     className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                    placeholder="john@example.com"
+                    placeholder="name@example.com"
                   />
                 </div>
               </div>
