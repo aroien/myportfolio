@@ -85,7 +85,7 @@ function App() {
     { icon: Briefcase, value: "3+", label: "Years Experience" },
     { icon: Award, value: "15+", label: "Projects Completed" },
     { icon: Users, value: "10+", label: "Happy Clients" },
-    { icon: Coffee, value: "1000+", label: "Cups of Coffee" },
+    { icon: Coffee, value: "100+", label: "Cups of Coffee" },
   ];
 
   const services = [
@@ -257,11 +257,6 @@ function App() {
                 className="relative text-indigo-400 animate-bounce"
               />
             </div>
-          </div>
-
-          <div className="mb-4 inline-flex items-center px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full">
-            <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-            <span className="text-sm text-gray-300">Available for hire</span>
           </div>
 
           <h1 className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent leading-tight">
