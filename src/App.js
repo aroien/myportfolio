@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import emailjs from "@emailjs/browser";
+import ProjectCard from "./components/ProjectCard";
+
 import {
   Github,
   Linkedin,
   Mail,
-  ExternalLink,
   Menu,
   X,
   Send,
@@ -31,6 +32,8 @@ function App() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fullText = "Hi, this is M Mehedi";
+
+  const currentYear = require("current-year");
 
   // EmailJS Configuration - REPLACE THESE WITH YOUR VALUES
   const EMAILJS_SERVICE_ID = "service_ebqxlce";
@@ -83,14 +86,21 @@ function App() {
       tech: ["React", "Redux", "Node.js", "MongoDB"],
       link: "#",
       featured: true,
+      // Add preview image URL or use live preview URL
+      previewImage:
+        "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&h=600&fit=crop",
+      // Alternative: use previewUrl for iframe preview
+      // previewUrl: "https://your-project-url.com"
     },
     {
-      title: "Task Management App",
+      title: "IGRS Learning Platform",
       description:
-        "Collaborative project management tool with real-time updates, drag-and-drop interface, and team features.",
-      tech: ["React", "TypeScript", "Firebase", "Tailwind"],
-      link: "#",
+        "IGRS is an online learning platform that offers a variety of courses, interactive quizzes, and progress tracking for students.",
+      tech: ["NextJS", "React", "TypeScript", "PostgreSQL", "Tailwind"],
+      link: "https://igrs-learning.vercel.app/",
       featured: true,
+      // Use live preview for deployed projects
+      previewUrl: "https://igrs-learning.vercel.app/",
     },
     {
       title: "Weather Dashboard",
@@ -99,6 +109,8 @@ function App() {
       tech: ["React", "API Integration", "Chart.js", "CSS3"],
       link: "#",
       featured: false,
+      previewImage:
+        "https://images.unsplash.com/photo-1592210454359-9043f067919b?w=800&h=600&fit=crop",
     },
     {
       title: "Social Media Analytics",
@@ -107,11 +119,14 @@ function App() {
       tech: ["React", "D3.js", "REST API", "Tailwind"],
       link: "#",
       featured: false,
+      previewImage:
+        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
     },
   ];
 
   const skills = [
     { name: "React", level: 95, category: "Frontend" },
+    { name: "NextJS", level: 75, category: "Backend" },
     { name: "JavaScript", level: 90, category: "Frontend" },
     { name: "TypeScript", level: 85, category: "Frontend" },
     { name: "Tailwind CSS", level: 90, category: "Frontend" },
@@ -151,18 +166,9 @@ function App() {
 
   const testimonials = [
     {
-      name: "Sarah Johnson",
-      role: "Product Manager at TechCorp",
-      content:
-        "Outstanding developer! Delivered our project ahead of schedule with exceptional quality.",
-      avatar: "SJ",
-    },
-    {
-      name: "Michael Chen",
-      role: "CTO at StartupXYZ",
-      content:
-        "Highly skilled and professional. Great communication and problem-solving abilities.",
-      avatar: "MC",
+      name: "Not Available",
+      role: "--",
+      content: "----",
     },
   ];
 
@@ -196,7 +202,7 @@ function App() {
           from_email: formData.email,
           message: formData.message,
         },
-        EMAILJS_PUBLIC_KEY
+        EMAILJS_PUBLIC_KEY,
       );
 
       if (result.text === "OK") {
@@ -206,7 +212,7 @@ function App() {
     } catch (error) {
       console.error("EmailJS Error:", error);
       alert(
-        "❌ Oops! Something went wrong. Please try again or email me directly."
+        "❌ Oops! Something went wrong. Please try again or email me directly.",
       );
     } finally {
       setIsSubmitting(false);
@@ -502,46 +508,7 @@ function App() {
 
           <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
             {projects.map((project, idx) => (
-              <div
-                key={idx}
-                className={`bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-xl sm:rounded-2xl p-6 sm:p-8 border ${
-                  project.featured
-                    ? "border-indigo-500/50"
-                    : "border-gray-700/50"
-                } hover:border-indigo-500 transition-all transform hover:-translate-y-2 group relative overflow-hidden`}
-              >
-                {project.featured && (
-                  <div className="absolute top-3 sm:top-4 right-3 sm:right-4 px-2 sm:px-3 py-1 bg-indigo-500 text-xs font-semibold rounded-full">
-                    Featured
-                  </div>
-                )}
-                <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-400 group-hover:text-purple-400 transition-colors">
-                  {project.title}
-                </h3>
-                <p className="text-gray-400 mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
-                  {project.description}
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
-                  {project.tech.map((tech, i) => (
-                    <span
-                      key={i}
-                      className="px-2 sm:px-3 py-1 bg-indigo-600/20 text-indigo-300 rounded-full text-xs sm:text-sm border border-indigo-500/30"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-                <a
-                  href={project.link}
-                  className="inline-flex items-center text-indigo-400 hover:text-indigo-300 transition-colors font-semibold group-hover:gap-3 gap-2 text-sm sm:text-base"
-                >
-                  View Project{" "}
-                  <ExternalLink
-                    size={14}
-                    className="sm:w-4 sm:h-4 transition-all"
-                  />
-                </a>
-              </div>
+              <ProjectCard key={idx} project={project} index={idx} />
             ))}
           </div>
         </div>
@@ -748,7 +715,9 @@ function App() {
 
       {/* Footer */}
       <footer className="py-8 px-6 border-t border-gray-800/50 text-center text-gray-500 relative z-10">
-        <p className="mb-2">&copy; 2025 M Mehedi. All rights reserved.</p>
+        <p className="mb-2">
+          &copy; {currentYear()} M Mehedi. All rights reserved.
+        </p>
         <p className="text-sm">
           Built with React & Tailwind CSS | Designed with ❤️
         </p>
