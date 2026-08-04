@@ -596,7 +596,7 @@ function App() {
           {/* Social Links */}
           <div className="flex justify-center gap-4 mb-12">
             <a
-              href="mailto:admin@gmail.com"
+              href="mailto:admin@mmehedi.me"
               title="Email"
               className="p-4 bg-white border border-gray-200 text-gray-500 rounded-2xl shadow-sm hover:border-indigo-300 hover:text-indigo-600 hover:shadow-md transition-all"
             >
