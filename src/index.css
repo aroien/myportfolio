@@ -4,16 +4,12 @@
 
 html {
   scroll-behavior: smooth;
-}
-@keyframes slide {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
+  background-color: #ffffff;
 }
 
-.animate-slide {
-  animation: slide 20s linear infinite;
+body {
+  background-color: #ffffff;
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

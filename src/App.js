@@ -13,10 +13,17 @@ import {
   Briefcase,
   Award,
   Users,
-  Coffee,
+  Code2,
   ArrowRight,
   Check,
 } from "lucide-react";
+
+const ROLES = [
+  "Frontend Developer",
+  "React Specialist",
+  "UI Engineer",
+  "Next.js Developer",
+];
 
 function App() {
   const [activeSection, setActiveSection] = useState("home");
@@ -30,12 +37,11 @@ function App() {
   const [isVisible, setIsVisible] = useState(false);
   const [typedText, setTypedText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [roleIndex, setRoleIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const fullText = "Hi, this is M Mehedi";
 
   const currentYear = require("current-year");
 
-  // EmailJS Configuration - REPLACE THESE WITH YOUR VALUES
   const EMAILJS_SERVICE_ID = "service_ebqxlce";
   const EMAILJS_TEMPLATE_ID = "template_8z7doha";
   const EMAILJS_PUBLIC_KEY = "80PfHghuTAIsE4rS3";
@@ -46,68 +52,59 @@ function App() {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
     window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
-    let index = 0;
+  useEffect(() => {
+    const currentRole = ROLES[roleIndex];
     let timeout;
 
-    const type = () => {
-      if (!isDeleting && index <= fullText.length) {
-        setTypedText(fullText.substring(0, index));
-        index++;
-        timeout = setTimeout(type, 100);
-      } else if (!isDeleting && index > fullText.length) {
-        timeout = setTimeout(() => {
-          setIsDeleting(true);
-          type();
-        }, 2000);
-      } else if (isDeleting && index > 0) {
-        setTypedText(fullText.substring(0, index - 1));
-        index--;
-        timeout = setTimeout(type, 50);
-      } else if (isDeleting && index === 0) {
-        setIsDeleting(false);
-        timeout = setTimeout(type, 500);
-      }
-    };
+    if (!isDeleting && typedText.length < currentRole.length) {
+      timeout = setTimeout(
+        () => setTypedText(currentRole.substring(0, typedText.length + 1)),
+        100,
+      );
+    } else if (!isDeleting && typedText.length === currentRole.length) {
+      timeout = setTimeout(() => setIsDeleting(true), 2200);
+    } else if (isDeleting && typedText.length > 0) {
+      timeout = setTimeout(
+        () => setTypedText(currentRole.substring(0, typedText.length - 1)),
+        50,
+      );
+    } else if (isDeleting && typedText.length === 0) {
+      setIsDeleting(false);
+      setRoleIndex((prev) => (prev + 1) % ROLES.length);
+    }
 
-    type();
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      clearTimeout(timeout);
-    };
-  }, [isDeleting]);
+    return () => clearTimeout(timeout);
+  }, [typedText, isDeleting, roleIndex]);
 
   const projects = [
     {
-      title: "E-Commerce Platform",
-      description:
-        "A full-featured online shopping platform with cart management, payment integration, and admin dashboard.",
-      tech: ["React", "Redux", "Node.js", "MongoDB"],
-      link: "#",
-      featured: true,
-      // Add preview image URL or use live preview URL
-      previewImage:
-        "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&h=600&fit=crop",
-      // Alternative: use previewUrl for iframe preview
-      // previewUrl: "https://your-project-url.com"
-    },
-    {
       title: "IGRS Learning Platform",
       description:
-        "IGRS is an online learning platform that offers a variety of courses, interactive quizzes, and progress tracking for students.",
-      tech: ["NextJS", "React", "TypeScript", "PostgreSQL", "Tailwind"],
+        "A full-stack e-learning platform with course management, interactive quizzes, and student progress tracking. Built with Next.js and TypeScript, deployed to production.",
+      tech: ["Next.js", "React", "TypeScript", "PostgreSQL", "Tailwind CSS"],
       link: "https://igrs-learning.vercel.app/",
       featured: true,
-      // Use live preview for deployed projects
       previewUrl: "https://igrs-learning.vercel.app/",
+    },
+    {
+      title: "E-Commerce Platform",
+      description:
+        "A full-featured online shopping platform with product catalog, cart management, secure checkout flow, and an admin dashboard for inventory management.",
+      tech: ["React", "Redux Toolkit", "Node.js", "MongoDB", "Stripe"],
+      link: "https://github.com/aroien",
+      featured: true,
+      previewImage:
+        "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&h=600&fit=crop",
     },
     {
       title: "Weather Dashboard",
       description:
-        "Interactive weather application with location-based forecasts, beautiful visualizations, and historical data.",
-      tech: ["React", "API Integration", "Chart.js", "CSS3"],
-      link: "#",
+        "Interactive weather app with geolocation-based forecasts, 7-day outlook, and animated data visualizations built with Chart.js.",
+      tech: ["React", "OpenWeather API", "Chart.js", "CSS3"],
+      link: "https://github.com/aroien",
       featured: false,
       previewImage:
         "https://images.unsplash.com/photo-1592210454359-9043f067919b?w=800&h=600&fit=crop",
@@ -115,61 +112,83 @@ function App() {
     {
       title: "Social Media Analytics",
       description:
-        "Real-time analytics dashboard for social media metrics with data visualization and export features.",
-      tech: ["React", "D3.js", "REST API", "Tailwind"],
-      link: "#",
+        "Real-time analytics dashboard aggregating social media metrics with interactive D3.js visualizations and CSV export functionality.",
+      tech: ["React", "D3.js", "REST API", "Tailwind CSS"],
+      link: "https://github.com/aroien",
       featured: false,
       previewImage:
         "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
     },
   ];
 
-  const skills = [
-    { name: "React", level: 95, category: "Frontend" },
-    { name: "NextJS", level: 75, category: "Backend" },
-    { name: "JavaScript", level: 90, category: "Frontend" },
-    { name: "TypeScript", level: 85, category: "Frontend" },
-    { name: "Tailwind CSS", level: 90, category: "Frontend" },
-    { name: "Node.js", level: 75, category: "Backend" },
-    { name: "Git", level: 85, category: "Tools" },
+  const skillCategories = [
+    {
+      category: "Frontend",
+      skills: [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "JavaScript (ES6+)",
+        "Tailwind CSS",
+        "HTML5",
+        "CSS3",
+      ],
+    },
+    {
+      category: "Backend & Data",
+      skills: ["Node.js", "REST APIs", "PostgreSQL", "MongoDB"],
+    },
+    {
+      category: "Tools & Workflow",
+      skills: [
+        "Git & GitHub",
+        "Vercel",
+        "Figma",
+        "VS Code",
+        "ESLint / Prettier",
+      ],
+    },
   ];
 
   const stats = [
     { icon: Briefcase, value: "3+", label: "Years Experience" },
     { icon: Award, value: "15+", label: "Projects Completed" },
     { icon: Users, value: "10+", label: "Happy Clients" },
-    { icon: Coffee, value: "1000+", label: "Cups of Coffee" },
+    { icon: Code2, value: "10+", label: "Technologies" },
   ];
 
   const services = [
     {
       title: "Web Development",
       description:
-        "Building responsive, high-performance web applications with modern frameworks",
+        "Building fast, scalable web applications with React and Next.js, optimized for performance and SEO.",
+      features: ["React / Next.js", "TypeScript", "Performance Optimization"],
+    },
+    {
+      title: "UI Implementation",
+      description:
+        "Translating Figma designs into pixel-perfect, responsive interfaces with full attention to accessibility.",
       features: [
-        "React/Next.js",
         "Responsive Design",
-        "Performance Optimization",
+        "Accessibility (a11y)",
+        "Cross-browser Compatibility",
       ],
     },
     {
-      title: "UI/UX Design",
-      description: "Creating beautiful, intuitive interfaces that users love",
-      features: ["User Research", "Wireframing", "Prototyping"],
-    },
-    {
-      title: "Consulting",
-      description: "Technical consulting and code reviews for your projects",
-      features: ["Code Review", "Architecture", "Best Practices"],
+      title: "Technical Consulting",
+      description:
+        "Architecture reviews, code audits, and technical guidance to help teams ship better software faster.",
+      features: ["Code Review", "Architecture Planning", "Best Practices"],
     },
   ];
 
-  const testimonials = [
-    {
-      name: "Not Available",
-      role: "--",
-      content: "----",
-    },
+  const navItems = [
+    "home",
+    "about",
+    "services",
+    "projects",
+    "skills",
+    "contact",
   ];
 
   const ScrollToSection = (id) => {
@@ -183,16 +202,12 @@ function App() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     try {
       const result = await emailjs.send(
         EMAILJS_SERVICE_ID,
@@ -204,70 +219,56 @@ function App() {
         },
         EMAILJS_PUBLIC_KEY,
       );
-
       if (result.text === "OK") {
-        alert("✅ Message sent successfully! I'll get back to you soon.");
+        alert("Message sent successfully! I'll get back to you soon.");
         setFormData({ name: "", email: "", message: "" });
       }
     } catch (error) {
       console.error("EmailJS Error:", error);
-      alert(
-        "❌ Oops! Something went wrong. Please try again or email me directly.",
-      );
+      alert("Something went wrong. Please try again or email me directly.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="bg-gray-900 text-gray-100 min-h-screen relative overflow-hidden">
-      {/* Animated Background Elements */}
+    <div className="bg-white text-gray-900 min-h-screen relative overflow-hidden">
+      {/* Subtle background orbs */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 md:w-96 md:h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-1/4 right-1/4 w-64 h-64 md:w-96 md:h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "1s" }}
-        ></div>
+        <div className="absolute -top-32 -left-32 w-96 h-96 md:w-[36rem] md:h-[36rem] bg-indigo-100/70 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 md:w-[36rem] md:h-[36rem] bg-violet-100/70 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Cursor follower effect - hidden on mobile */}
+      {/* Cursor follower */}
       <div
-        className="hidden md:block fixed w-96 h-96 rounded-full pointer-events-none z-0 opacity-20 blur-3xl transition-all duration-300"
+        className="hidden md:block fixed w-80 h-80 rounded-full pointer-events-none z-0 opacity-40 blur-3xl transition-all duration-500"
         style={{
           background:
-            "radial-gradient(circle, rgba(99,102,241,0.4) 0%, transparent 70%)",
-          left: mousePosition.x - 192,
-          top: mousePosition.y - 192,
+            "radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)",
+          left: mousePosition.x - 160,
+          top: mousePosition.y - 160,
         }}
       />
 
-      {/* Navigation */}
-      <nav className="fixed w-full bg-gray-900/95 backdrop-blur-md z-50 border-b border-gray-800/50 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 md:py-4 flex justify-between items-center">
-          <div className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-pulse">
-            <div>
-              <a href="/">&lt;mMehedi/&gt;</a>
-            </div>
-          </div>
+      {/* ── Navigation ── */}
+      <nav className="fixed w-full bg-white/90 backdrop-blur-lg z-50 border-b border-gray-100 shadow-sm">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 py-4 flex justify-between items-center">
+          <a
+            href="/"
+            className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent font-mono tracking-tight"
+          >
+            &lt;mMehedi /&gt;
+          </a>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-4 lg:space-x-8">
-            {[
-              "home",
-              "about",
-              "services",
-              "projects",
-              "skills",
-              "testimonials",
-              "contact",
-            ].map((item) => (
+          <div className="hidden md:flex items-center gap-1 lg:gap-2">
+            {navItems.map((item) => (
               <button
                 key={item}
                 onClick={() => ScrollToSection(item)}
-                className={`capitalize transition-all duration-300 text-sm lg:text-base ${
+                className={`capitalize px-3 py-2 rounded-lg text-sm lg:text-base font-medium transition-all duration-200 ${
                   activeSection === item
-                    ? "text-indigo-400 font-semibold"
-                    : "text-gray-300 hover:text-indigo-400"
+                    ? "text-indigo-600 bg-indigo-50"
+                    : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
                 {item}
@@ -275,31 +276,21 @@ function App() {
             ))}
           </div>
 
-          {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-gray-300 hover:text-indigo-400 transition-colors"
+            className="md:hidden text-gray-500 hover:text-gray-900 transition-colors p-1"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-gray-800/95 backdrop-blur-md border-t border-gray-700">
-            {[
-              "home",
-              "about",
-              "services",
-              "projects",
-              "skills",
-              "testimonials",
-              "contact",
-            ].map((item) => (
+          <div className="md:hidden bg-white border-t border-gray-100 shadow-lg">
+            {navItems.map((item) => (
               <button
                 key={item}
                 onClick={() => ScrollToSection(item)}
-                className="block w-full text-left px-6 py-3 capitalize hover:bg-gray-700/50 transition-colors"
+                className="block w-full text-left px-6 py-3.5 capitalize text-gray-700 hover:bg-gray-50 hover:text-indigo-600 font-medium transition-colors"
               >
                 {item}
               </button>
@@ -308,62 +299,62 @@ function App() {
         )}
       </nav>
 
-      {/* Hero Section */}
+      {/* ── Hero ── */}
       <section
         id="home"
-        className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 pt-20"
+        className="relative min-h-screen flex items-center justify-center px-5 sm:px-8 pt-20"
       >
         <div
-          className={`max-w-5xl mx-auto text-center z-10 transition-all duration-1000 ${
+          className={`max-w-4xl mx-auto text-center z-10 transition-all duration-1000 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <div className="mb-6 inline-block">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
-              {/* Custom Code Brackets with Typing Animation */}
-              <div className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-indigo-400 animate-bounce font-mono px-2">
-                <span className="text-purple-400">&lt;</span>
-                <span className="text-indigo-300 text-lg sm:text-2xl md:text-3xl lg:text-4xl align-middle">
-                  {typedText}
-                </span>
-                <span className="text-indigo-300 text-lg sm:text-2xl md:text-3xl lg:text-4xl align-middle animate-blink">
-                  |
-                </span>
-                <span className="text-purple-400">/&gt;</span>
-              </div>
-            </div>
+          <div className="mb-8 flex justify-center">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full text-emerald-700 text-sm font-medium">
+              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+              Available for new opportunities
+            </span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent leading-tight">
-            Frontend Developer
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold mb-5 leading-tight tracking-tight text-gray-900">
+            M.{" "}
+            <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
+              Mehedi
+            </span>
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl text-gray-400 mb-3 sm:mb-4 max-w-3xl mx-auto px-4">
-            Crafting beautiful, responsive web experiences
+
+          <div className="mb-6 h-9 sm:h-11 flex items-center justify-center">
+            <p className="text-lg sm:text-xl md:text-2xl font-mono text-gray-500">
+              <span className="text-indigo-600 font-semibold">{typedText}</span>
+              <span className="animate-pulse text-indigo-500 ml-0.5">|</span>
+            </p>
+          </div>
+
+          <p className="text-base sm:text-lg md:text-xl text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Building performant, accessible, and beautiful web experiences with{" "}
+            <span className="text-indigo-600 font-semibold">3+ years</span> of
+            expertise in React &amp; Next.js.
           </p>
-          <p className="text-base sm:text-lg text-gray-500 mb-6 sm:mb-8 px-4">
-            with <span className="text-indigo-400 font-semibold">3 years</span>{" "}
-            of expertise in modern technologies
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-4 px-4">
+
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4">
             <button
               onClick={() => ScrollToSection("projects")}
-              className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-indigo-500/50 font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
+              className="w-full sm:w-auto px-7 py-3.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all text-sm sm:text-base"
             >
               View Projects
-              <ArrowRight size={18} className="sm:w-5 sm:h-5" />
+              <ArrowRight size={17} />
             </button>
             <a
               href="/resume.pdf"
               download
-              className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-purple-500/50 font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
+              className="w-full sm:w-auto px-7 py-3.5 border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all text-sm sm:text-base"
             >
-              <Download size={18} className="sm:w-5 sm:h-5" />
+              <Download size={17} />
               Download Resume
             </a>
             <button
               onClick={() => ScrollToSection("contact")}
-              className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 border-2 border-indigo-600 hover:bg-indigo-600/10 rounded-lg transition-all font-semibold text-sm sm:text-base"
+              className="w-full sm:w-auto px-7 py-3.5 border-2 border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-800 rounded-xl font-semibold transition-all text-sm sm:text-base"
             >
               Get in Touch
             </button>
@@ -371,77 +362,81 @@ function App() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-            {stats.map((stat, idx) => (
-              <div
-                key={idx}
-                className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-700/50 text-center hover:border-indigo-500/50 transition-all transform hover:scale-105"
-              >
-                <stat.icon className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 sm:mb-3 text-indigo-400" />
-                <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-gray-400 text-xs sm:text-sm">
-                  {stat.label}
-                </div>
+      {/* ── Stats ── */}
+      <section className="py-16 sm:py-20 px-5 sm:px-8 bg-slate-50 relative z-10">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          {stats.map((stat, idx) => (
+            <div
+              key={idx}
+              className="bg-white rounded-2xl p-5 sm:p-7 border border-gray-100 shadow-sm text-center hover:shadow-md hover:border-indigo-200 transition-all"
+            >
+              <stat.icon className="w-6 h-6 sm:w-7 sm:h-7 mx-auto mb-3 text-indigo-500" />
+              <div className="text-2xl sm:text-3xl font-bold text-indigo-600 mb-1">
+                {stat.value}
               </div>
-            ))}
-          </div>
+              <div className="text-gray-400 text-xs sm:text-sm font-medium">
+                {stat.label}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* About Section */}
+      {/* ── About ── */}
       <section
         id="about"
-        className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10"
+        className="py-20 sm:py-24 md:py-28 px-5 sm:px-8 bg-white relative z-10"
       >
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-            About Me
-          </h2>
-          <p className="text-center text-gray-400 mb-8 sm:mb-12 text-base sm:text-lg">
-            Get to know me better
-          </p>
+          <div className="text-center mb-14 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-gray-900">
+              About{" "}
+              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Me
+              </span>
+            </h2>
+            <p className="text-gray-400 text-base sm:text-lg">
+              A bit about who I am and what I do
+            </p>
+          </div>
 
           <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-xl sm:rounded-2xl p-6 sm:p-8 border border-gray-700/50">
-              <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-indigo-400">
-                My Story
+            <div className="bg-slate-50 rounded-2xl p-7 sm:p-9 border border-gray-100">
+              <h3 className="text-xl sm:text-2xl font-bold mb-4 text-indigo-600">
+                My Background
               </h3>
-              <p className="text-gray-300 text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
-                I'm a passionate frontend developer with 3 years of experience
-                building modern, user-centric web applications. I specialize in
-                React and have a keen eye for design and performance
-                optimization.
+              <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-4">
+                I'm a frontend developer with 3+ years of hands-on experience
+                building production-grade web applications. I specialize in
+                React and Next.js, with a strong focus on performance,
+                accessibility, and clean code architecture.
               </p>
-              <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
-                My journey in web development has taught me the importance of
-                clean code, responsive design, and creating seamless user
-                experiences.
+              <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
+                I care deeply about user experience — every interface I build is
+                designed to be fast, responsive, and intuitive. I thrive in
+                collaborative environments where quality and clear communication
+                are valued.
               </p>
             </div>
 
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-xl sm:rounded-2xl p-6 sm:p-8 border border-gray-700/50">
-              <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-purple-400">
+            <div className="bg-slate-50 rounded-2xl p-7 sm:p-9 border border-gray-100">
+              <h3 className="text-xl sm:text-2xl font-bold mb-4 text-purple-600">
                 What I Bring
               </h3>
-              <ul className="space-y-2 sm:space-y-3">
+              <ul className="space-y-3">
                 {[
-                  "Clean, maintainable code",
-                  "Pixel-perfect implementations",
-                  "Performance optimization",
-                  "Responsive design expertise",
-                  "Strong problem-solving skills",
-                  "Excellent communication",
+                  "Production-ready React & Next.js applications",
+                  "TypeScript-first development practices",
+                  "Responsive & accessible UI implementation",
+                  "Performance optimization & Core Web Vitals",
+                  "Clean, maintainable, well-structured code",
+                  "Strong communication & team collaboration",
                 ].map((item, idx) => (
                   <li
                     key={idx}
-                    className="flex items-center text-gray-300 text-sm sm:text-base"
+                    className="flex items-start text-gray-700 text-sm sm:text-base"
                   >
-                    <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 mr-2 sm:mr-3 flex-shrink-0" />
+                    <Check className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500 mr-3 mt-0.5 flex-shrink-0" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -451,38 +446,43 @@ function App() {
         </div>
       </section>
 
-      {/* Services Section */}
+      {/* ── Services ── */}
       <section
         id="services"
-        className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10"
+        className="py-20 sm:py-24 md:py-28 px-5 sm:px-8 bg-slate-50 relative z-10"
       >
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-            Services
-          </h2>
-          <p className="text-center text-gray-400 mb-8 sm:mb-12 text-base sm:text-lg">
-            What I can do for you
-          </p>
+          <div className="text-center mb-14 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-gray-900">
+              What I{" "}
+              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Do
+              </span>
+            </h2>
+            <p className="text-gray-400 text-base sm:text-lg">
+              Specialized areas I can contribute to
+            </p>
+          </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {services.map((service, idx) => (
               <div
                 key={idx}
-                className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-xl sm:rounded-2xl p-6 sm:p-8 border border-gray-700/50 hover:border-indigo-500/50 transition-all transform hover:-translate-y-2 group"
+                className="bg-white rounded-2xl p-7 sm:p-8 border border-gray-100 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all group"
               >
-                <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-400 group-hover:text-purple-400 transition-colors">
+                <h3 className="text-lg sm:text-xl font-bold mb-3 text-gray-900 group-hover:text-indigo-600 transition-colors">
                   {service.title}
                 </h3>
-                <p className="text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">
+                <p className="text-gray-500 mb-5 text-sm sm:text-base leading-relaxed">
                   {service.description}
                 </p>
                 <ul className="space-y-2">
                   {service.features.map((feature, i) => (
                     <li
                       key={i}
-                      className="flex items-center text-gray-300 text-xs sm:text-sm"
+                      className="flex items-center text-gray-600 text-xs sm:text-sm"
                     >
-                      <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-2"></div>
+                      <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full mr-2.5 flex-shrink-0"></div>
                       {feature}
                     </li>
                   ))}
@@ -493,158 +493,146 @@ function App() {
         </div>
       </section>
 
-      {/* Projects Section */}
+      {/* ── Projects ── */}
       <section
         id="projects"
-        className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10"
+        className="py-20 sm:py-24 md:py-28 px-5 sm:px-8 bg-white relative z-10"
       >
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-            Featured Projects
-          </h2>
-          <p className="text-center text-gray-400 mb-8 sm:mb-12 text-base sm:text-lg">
-            Some of my recent work
-          </p>
+          <div className="text-center mb-14 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-gray-900">
+              Featured{" "}
+              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Projects
+              </span>
+            </h2>
+            <p className="text-gray-400 text-base sm:text-lg">
+              A selection of work I'm proud of
+            </p>
+          </div>
 
-          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid sm:grid-cols-2 xl:grid-cols-2 gap-5 sm:gap-6">
             {projects.map((project, idx) => (
               <ProjectCard key={idx} project={project} index={idx} />
             ))}
           </div>
+
+          <div className="mt-10 text-center">
+            <a
+              href="https://github.com/aroien"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 border border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all text-sm font-medium shadow-sm"
+            >
+              <Github size={17} />
+              See more on GitHub
+            </a>
+          </div>
         </div>
       </section>
 
-      {/* Skills Section */}
+      {/* ── Skills ── */}
       <section
         id="skills"
-        className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10"
+        className="py-20 sm:py-24 md:py-28 px-5 sm:px-8 bg-slate-50 relative z-10"
       >
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-            Skills & Technologies
-          </h2>
-          <p className="text-center text-gray-400 mb-8 sm:mb-12 text-base sm:text-lg">
-            My technical expertise
-          </p>
-
-          <div className="space-y-6 sm:space-y-8">
-            {skills.map((skill, idx) => (
-              <div key={idx} className="group">
-                <div className="flex justify-between mb-2 sm:mb-3 flex-wrap gap-2">
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <span className="text-gray-200 font-semibold text-base sm:text-lg">
-                      {skill.name}
-                    </span>
-                    <span className="px-2 py-0.5 sm:py-1 bg-indigo-500/20 text-indigo-300 rounded text-xs">
-                      {skill.category}
-                    </span>
-                  </div>
-                  <span className="text-indigo-400 font-bold text-base sm:text-lg">
-                    {skill.level}%
-                  </span>
-                </div>
-                <div className="w-full bg-gray-700/50 rounded-full h-3 sm:h-4 overflow-hidden border border-gray-600/50">
-                  <div
-                    className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-full rounded-full transition-all duration-1000 ease-out relative overflow-hidden"
-                    style={{ width: `${skill.level}%` }}
-                  >
-                    <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="text-center mb-14 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-gray-900">
+              Skills &{" "}
+              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Technologies
+              </span>
+            </h2>
+            <p className="text-gray-400 text-base sm:text-lg">
+              Tools and technologies I work with
+            </p>
           </div>
-        </div>
-      </section>
 
-      {/* Testimonials Section */}
-      <section
-        id="testimonials"
-        className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10"
-      >
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-            Testimonials
-          </h2>
-          <p className="text-center text-gray-400 mb-8 sm:mb-12 text-base sm:text-lg">
-            What people say about my work
-          </p>
-
-          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
-            {testimonials.map((testimonial, idx) => (
+          <div className="space-y-5">
+            {skillCategories.map((cat, idx) => (
               <div
                 key={idx}
-                className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-xl sm:rounded-2xl p-6 sm:p-8 border border-gray-700/50 hover:border-indigo-500/50 transition-all"
+                className="bg-white rounded-2xl p-7 sm:p-8 border border-gray-100 shadow-sm"
               >
-                <div className="flex items-center mb-3 sm:mb-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold mr-3 sm:mr-4 text-sm sm:text-base">
-                    {testimonial.avatar}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-200 text-sm sm:text-base">
-                      {testimonial.name}
-                    </div>
-                    <div className="text-xs sm:text-sm text-gray-400">
-                      {testimonial.role}
-                    </div>
-                  </div>
+                <h3 className="text-xs font-semibold uppercase tracking-widest text-indigo-500 mb-5">
+                  {cat.category}
+                </h3>
+                <div className="flex flex-wrap gap-2 sm:gap-3">
+                  {cat.skills.map((skill, i) => (
+                    <span
+                      key={i}
+                      className="px-3.5 sm:px-4 py-1.5 sm:py-2 bg-slate-50 text-gray-700 rounded-xl text-sm font-medium border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 transition-all cursor-default"
+                    >
+                      {skill}
+                    </span>
+                  ))}
                 </div>
-                <p className="text-gray-300 italic leading-relaxed text-sm sm:text-base">
-                  "{testimonial.content}"
-                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Contact Section */}
+      {/* ── Contact ── */}
       <section
         id="contact"
-        className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative z-10"
+        className="py-20 sm:py-24 md:py-28 px-5 sm:px-8 bg-white relative z-10"
       >
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-center bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-            Let's Connect
-          </h2>
-          <p className="text-gray-400 text-base sm:text-lg mb-8 sm:mb-12 text-center px-4">
-            I'm always open to new opportunities and collaborations. Feel free
-            to reach out!
-          </p>
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-12 sm:mb-14">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-gray-900">
+              Let's{" "}
+              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Connect
+              </span>
+            </h2>
+            <p className="text-gray-400 text-base sm:text-lg max-w-xl mx-auto">
+              I'm actively looking for frontend engineering roles. Whether you
+              have an opportunity or just want to talk — my inbox is open.
+            </p>
+          </div>
 
           {/* Social Links */}
-          <div className="flex justify-center space-x-6 mb-12">
+          <div className="flex justify-center gap-4 mb-12">
             <a
-              href="mailto:mehedimhdn@gmail.com"
-              className="p-4 bg-gradient-to-br from-gray-800/50 to-gray-800/30 border border-gray-700/50 rounded-full hover:border-indigo-500 hover:scale-110 transition-all"
+              href="mailto:admin@gmail.com"
+              title="Email"
+              className="p-4 bg-white border border-gray-200 text-gray-500 rounded-2xl shadow-sm hover:border-indigo-300 hover:text-indigo-600 hover:shadow-md transition-all"
             >
-              <Mail size={24} />
+              <Mail size={22} />
             </a>
             <a
               href="https://github.com/aroien"
-              className="p-4 bg-gradient-to-br from-gray-800/50 to-gray-800/30 border border-gray-700/50 rounded-full hover:border-indigo-500 hover:scale-110 transition-all"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="GitHub"
+              className="p-4 bg-white border border-gray-200 text-gray-500 rounded-2xl shadow-sm hover:border-indigo-300 hover:text-indigo-600 hover:shadow-md transition-all"
             >
-              <Github size={24} />
+              <Github size={22} />
             </a>
             <a
               href="https://www.linkedin.com/in/momehedi/"
-              className="p-4 bg-gradient-to-br from-gray-800/50 to-gray-800/30 border border-gray-700/50 rounded-full hover:border-indigo-500 hover:scale-110 transition-all"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="LinkedIn"
+              className="p-4 bg-white border border-gray-200 text-gray-500 rounded-2xl shadow-sm hover:border-indigo-300 hover:text-indigo-600 hover:shadow-md transition-all"
             >
-              <Linkedin size={24} />
+              <Linkedin size={22} />
             </a>
           </div>
 
           {/* Contact Form */}
-          <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50">
-            <h3 className="text-3xl font-bold mb-6 text-indigo-400">
-              Send me a message
+          <div className="bg-white rounded-3xl p-7 sm:p-10 border border-gray-100 shadow-sm">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-7 text-gray-900">
+              Send a Message
             </h3>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <label
                     htmlFor="name"
-                    className="block text-gray-300 mb-2 font-medium"
+                    className="block text-gray-700 mb-2 font-medium text-sm"
                   >
                     Name *
                   </label>
@@ -655,15 +643,15 @@ function App() {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                    disabled={isSubmitting}
+                    className="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all disabled:opacity-50 text-sm sm:text-base"
                     placeholder="Your Name"
                   />
                 </div>
-
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-gray-300 mb-2 font-medium"
+                    className="block text-gray-700 mb-2 font-medium text-sm"
                   >
                     Email *
                   </label>
@@ -675,9 +663,8 @@ function App() {
                     onChange={handleInputChange}
                     required
                     disabled={isSubmitting}
-                    rows="6"
-                    className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                    placeholder="name@example.com"
+                    className="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all disabled:opacity-50 text-sm sm:text-base"
+                    placeholder="your@email.com"
                   />
                 </div>
               </div>
@@ -685,7 +672,7 @@ function App() {
               <div>
                 <label
                   htmlFor="message"
-                  className="block text-gray-300 mb-2 font-medium"
+                  className="block text-gray-700 mb-2 font-medium text-sm"
                 >
                   Message *
                 </label>
@@ -695,31 +682,33 @@ function App() {
                   value={formData.message}
                   onChange={handleInputChange}
                   required
+                  disabled={isSubmitting}
                   rows="6"
-                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all resize-none"
-                  placeholder="Tell me about your project..."
+                  className="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all resize-none disabled:opacity-50 text-sm sm:text-base"
+                  placeholder="Tell me about the role or project..."
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-lg transition-all transform hover:scale-105 font-semibold text-lg flex items-center justify-center gap-2 shadow-lg hover:shadow-indigo-500/50"
+                disabled={isSubmitting}
+                className="w-full px-8 py-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold text-base flex items-center justify-center gap-2 shadow-lg shadow-indigo-100 transition-all"
               >
-                <Send size={20} />
-                Send Message
+                <Send size={18} />
+                {isSubmitting ? "Sending..." : "Send Message"}
               </button>
             </form>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-8 px-6 border-t border-gray-800/50 text-center text-gray-500 relative z-10">
-        <p className="mb-2">
-          &copy; {currentYear()} M Mehedi. All rights reserved.
+      {/* ── Footer ── */}
+      <footer className="py-10 px-5 sm:px-8 bg-gray-900 text-center relative z-10">
+        <p className="text-gray-400 text-sm mb-1">
+          &copy; {currentYear()} M. Mehedi — Frontend Developer
         </p>
-        <p className="text-sm">
-          Built with React & Tailwind CSS | Designed with ❤️
+        <p className="text-gray-600 text-xs">
+          Built with React &amp; Tailwind CSS
         </p>
       </footer>
     </div>
