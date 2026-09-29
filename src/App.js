@@ -85,9 +85,9 @@ function App() {
       description:
         "A full-stack e-learning platform with course management, interactive quizzes, and student progress tracking. Built with Next.js and TypeScript, deployed to production.",
       tech: ["Next.js", "React", "TypeScript", "PostgreSQL", "Tailwind CSS"],
-      link: "https://igrs-learning.vercel.app/",
+      link: "https://igrsbd.org",
       featured: true,
-      previewUrl: "https://igrs-learning.vercel.app/",
+      previewUrl: "https://igrsbd.org",
     },
     {
       title: "E-Commerce Platform",
