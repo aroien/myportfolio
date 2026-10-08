@@ -5,6 +5,7 @@ import { saveProfile, type FormState } from "@/app/actions/admin";
 import type { Field } from "@/lib/collections";
 import type { Profile } from "@/lib/types";
 import { AvatarUpload } from "./avatar-upload";
+import { ResumeUpload } from "./resume-upload";
 import { FormField, PageHeader, SaveButton, submitWithoutReset } from "./ui";
 
 function Card({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
@@ -62,8 +63,8 @@ export function ProfileForm({ profile }: { profile: Profile }) {
           <AvatarUpload current={profile.avatarUrl} />
         </Card>
 
-        <Card title="Resume" description="A full URL, or a path to a file in the /public folder (e.g. /resume.pdf).">
-          {field(f("resumeUrl", "Resume / CV URL", "url"))}
+        <Card title="Resume" description="Shown as the Resume button on your homepage.">
+          <ResumeUpload current={profile.resumeUrl} />
         </Card>
 
         <Card title="Links">

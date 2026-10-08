@@ -114,7 +114,6 @@ export async function saveProfile(_prev: FormState, form: FormData): Promise<For
     email: s("email"),
     available: form.get("available") === "on",
     availabilityText: s("availabilityText"),
-    resumeUrl: s("resumeUrl"),
     socials: {
       github: s("github"),
       linkedin: s("linkedin"),
@@ -177,6 +176,56 @@ export async function removeAvatar() {
   await AssetModel.deleteOne({ key: "avatar" });
   await ProfileModel.updateOne({ key: "main" }, { $set: { avatarUrl: "" } });
   publish();
+}
+
+// ---------- Résumé ----------
+
+// Vercel limits request bodies to 4.5 MB, so keep uploads under that.
+const MAX_RESUME_BYTES = 4 * 1024 * 1024;
+
+const safeName = (name: string) => name.trim().replace(/\s+/g, "-").replace(/[^\w.-]/g, "") || "Resume";
+
+export async function uploadResume(form: FormData): Promise<{ error?: string; url?: string }> {
+  await requireAdmin();
+  const file = form.get("file");
+  if (!(file instanceof File) || file.size === 0) return { error: "Choose a PDF to upload." };
+  if (file.size > MAX_RESUME_BYTES) return { error: "PDF is too large (max 4 MB). Try exporting it with smaller images." };
+
+  const data = Buffer.from(await file.arrayBuffer());
+  if (data.subarray(0, 5).toString("ascii") !== "%PDF-") return { error: "That file isn't a PDF." };
+
+  const url = `/api/resume?v=${Date.now()}`;
+  try {
+    await connectDb();
+    const profile = await ProfileModel.findOne({ key: "main" }).select("name").lean<{ name?: string }>();
+    const filename = `${safeName(profile?.name ?? "")}-Resume.pdf`;
+    await AssetModel.updateOne(
+      { key: "resume" },
+      { $set: { data, contentType: "application/pdf", filename, size: data.length } },
+      { upsert: true },
+    );
+    await ProfileModel.updateOne({ key: "main" }, { $set: { resumeUrl: url } }, { upsert: true });
+  } catch (err) {
+    return { error: (err as Error).message };
+  }
+  publish();
+  return { url };
+}
+
+/** Use an external link (or a /public path) instead of an uploaded file. */
+export async function setResumeLink(link: string): Promise<{ error?: string }> {
+  await requireAdmin();
+  const url = link.trim();
+  if (url && !/^(https?:\/\/|\/)/.test(url)) return { error: "Link must start with https:// or /" };
+  await connectDb();
+  await AssetModel.deleteOne({ key: "resume" });
+  await ProfileModel.updateOne({ key: "main" }, { $set: { resumeUrl: url } }, { upsert: true });
+  publish();
+  return {};
+}
+
+export async function removeResume() {
+  await setResumeLink("");
 }
 
 // ---------- Messages ----------

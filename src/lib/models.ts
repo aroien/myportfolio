@@ -100,6 +100,7 @@ const AssetSchema = new Schema(
     key: { type: String, required: true, unique: true },
     data: { type: Buffer, required: true },
     contentType: { type: String, required: true },
+    filename: String,
     size: Number,
   },
   opts,
