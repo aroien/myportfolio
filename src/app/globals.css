@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+/* Laptop screens with limited height (e.g. 1366×768): tighten the sticky sidebar. */
+@custom-variant short (@media (max-height: 900px));
+@custom-variant shorter (@media (max-height: 800px));
+
+/* dark: follows the theme toggle (data-theme on <html>), not just the OS setting. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ---------- Public site palette: "Ink & Ember" (light + dark) ---------- */
+@theme inline {
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-chip: var(--chip);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-ember: var(--ember);
+  --color-ember-deep: var(--ember-deep);
+  --color-ember-soft: var(--ember-soft);
+  --color-ember-ink: var(--ember-ink);
+  --color-on-ember: var(--on-ember);
+  --color-gold: var(--gold);
+}
+
+:root,
+[data-theme="light"] {
+  --paper: #faf8f4;
+  --card: #ffffff;
+  --chip: #f3efe8;
+  --ink: #111827;
+  --ink-2: #374151;
+  --ink-3: #6b7280;
+  --ink-4: #9ca3af;
+  --rule: #ebe5db;
+  --rule-strong: #d6cfc3;
+  --ember: #ea580c;
+  --ember-deep: #c2410c;
+  --ember-soft: #fff1e6;
+  --ember-ink: #c2410c;
+  --on-ember: #ffffff;
+  --gold: #f59e0b;
+  --dot: rgb(17 24 39 / 0.13);
+  --glow: rgb(234 88 12 / 0.10);
+}
+
+[data-theme="dark"] {
+  --paper: #0f0e0c;
+  --card: #181613;
+  --chip: #221f1b;
+  --ink: #f5f1ea;
+  --ink-2: #d6d0c6;
+  --ink-3: #a39d93;
+  --ink-4: #77716a;
+  --rule: #2c2823;
+  --rule-strong: #3d3832;
+  --ember: #fb923c;
+  --ember-deep: #fdba74;
+  --ember-soft: #2a1d14;
+  --ember-ink: #fdba74;
+  --on-ember: #1c1208;
+  --gold: #fbbf24;
+  --dot: rgb(245 241 234 / 0.09);
+  --glow: rgb(251 146 60 / 0.10);
+  color-scheme: dark;
+}
+
+@theme inline {
+  /* Admin panel palette (matches the public site) */
+  --color-bg: #f5f7fb;
+  --color-surface: #ffffff;
+  --color-surface-2: #eef2f7;
+  --color-line: #e2e8f0;
+  --color-fg: #0f172a;
+  --color-muted: #475569;
+  --color-dim: #94a3b8;
+  --color-accent: #2563eb;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-geist-sans);
+}
+
+:root {
+  color-scheme: light;
+}
+
+/* Admin panel shell (always light, independent of the site theme toggle). */
+body:has(.admin-theme) {
+  background: var(--color-bg);
+}
+.admin-theme {
+  color-scheme: light;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  min-height: 100dvh;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  transition: background-color 0.3s, color 0.3s;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--ember-soft);
+  color: var(--ember-ink);
+}
+
+
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(15 23 42 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(15 23 42 / 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* Admin form controls */
+.input {
+  width: 100%;
+  border-radius: 0.625rem;
+  border: 1px solid var(--color-line);
+  background: #ffffff;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.875rem;
+  color: var(--color-fg);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input:focus {
+  border-color: rgb(37 99 235 / 0.6);
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 0.12);
+}
+.input[aria-invalid="true"] {
+  border-color: rgb(220 38 38 / 0.6);
+}
