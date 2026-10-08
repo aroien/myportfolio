@@ -1,0 +1,2 @@
+/** Runs in <head> before first paint: the visitor's saved theme, else their system setting. */
+export const themeScript = `(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t)}catch(e){}})()`;
